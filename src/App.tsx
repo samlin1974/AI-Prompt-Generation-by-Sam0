@@ -30,9 +30,11 @@ import {
   Clock,
   Layers as LayersIcon,
   Plus,
-  ChevronRight
+  ChevronRight,
+  FileSpreadsheet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import * as XLSX from 'xlsx';
 import { SECTIONS, CHARACTER_SUFFIX, RECOMMENDATIONS } from './constants';
 import { PromptState } from './types';
 import { TRANSLATIONS } from './translations';
@@ -136,6 +138,45 @@ export default function App() {
     navigator.clipboard.writeText(prompt);
     setCopiedEn(true);
     setTimeout(() => setCopiedEn(false), 2000);
+  };
+
+  const handleExportExcel = () => {
+    const promptZh = generatePromptZh();
+    const promptEn = generatePromptEn();
+    
+    const data = [
+      ['類別', '設定項目', '選擇內容'],
+      ['基本設定', '語系', state.language],
+      ['基本設定', '頁數', state.pages],
+      ['基本設定', '時間', state.time],
+      ['基本設定', '講者備註', state.speakerNotes ? '需要' : '不需要'],
+      ['基本設定', '額外資訊', state.extraInfo],
+      ['核心內容', '簡報目的', state.purpose === '自訂簡報目的' ? state.customPurpose : state.purpose],
+      ['核心內容', '大綱邏輯', state.logic === '自訂大綱邏輯' ? state.customLogic : state.logic],
+      ['核心內容', 'CTA', state.cta === '自訂設定' ? state.customCta : state.cta],
+      ['角色與受眾', '你的角色', state.role === '自訂角色' ? state.customRole : state.role],
+      ['角色與受眾', '發表場景', state.scene === '自訂設定' ? state.customScene : state.scene],
+      ['角色與受眾', '目標受眾', state.audience === '自訂設定' ? state.customAudience : state.audience],
+      ['角色與受眾', '語氣人設', state.tone === '自訂設定' ? state.customTone : state.tone],
+      ['視覺風格', '視覺風格', state.visualStyle === '自訂視覺風格' ? state.customVisualStyle : state.visualStyle],
+      ['視覺風格', '主角設定', state.character === '自訂主角' ? state.customCharacter : state.character],
+      ['', '', ''],
+      ['產出結果', '中文提示詞', promptZh],
+      ['產出結果', '英文提示詞', promptEn],
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Prompt Settings");
+    
+    // Adjust column widths
+    ws['!cols'] = [
+      { wch: 15 }, // Category
+      { wch: 20 }, // Item
+      { wch: 100 }, // Content
+    ];
+
+    XLSX.writeFile(wb, `AI_Presentation_Prompt_${new Date().getTime()}.xlsx`);
   };
 
   const generatePromptZh = () => {
@@ -345,6 +386,14 @@ export default function App() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl border border-emerald-500/20 transition-all text-sm font-bold"
+              title="匯出 Excel"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>匯出 Excel</span>
+            </button>
             <button
               onClick={() => setState(INITIAL_STATE)}
               className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-400 hover:text-white"
