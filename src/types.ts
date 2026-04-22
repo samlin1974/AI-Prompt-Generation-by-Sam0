@@ -22,6 +22,12 @@ export interface PromptState {
   customCharacter: string;
   speakerNotes: boolean;
   extraInfo: string;
+  // Infographic specific fields
+  format: string;
+  customFormat: string;
+  blocks: string;
+  layout: string;
+  customLayout: string;
 }
 
 export interface Option {

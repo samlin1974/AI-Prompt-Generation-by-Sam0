@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import * as XLSX from 'xlsx';
-import { SECTIONS, CHARACTER_SUFFIX, RECOMMENDATIONS } from './constants';
+import { SECTIONS, CHARACTER_SUFFIX, RECOMMENDATIONS, INFOGRAPH_SECTIONS, INFOGRAPH_RECOMMENDATIONS } from './constants';
 import { PromptState } from './types';
 import { TRANSLATIONS } from './translations';
 
@@ -82,6 +82,26 @@ const ICON_MAP: Record<string, any> = {
   'audience': Users,
   'tone': MessageSquare,
   'cta': Target,
+
+  // Infographic specific icons
+  'format': LayersIcon,
+  'blocks': Layout,
+  'layout': Route,
+  '知識科普與懶人包': BookOpen,
+  '產品規格與痛點對比': Zap,
+  '時間軸與歷史演進': History,
+  '數據調查與成效報告': BarChart3,
+  '操作流程圖解 (Step-by-step)': Route,
+  '痛點放大 → 方案對比': GitBranch,
+  '漏斗型結構 (大範圍到小細節)': Layout,
+  '時間軸推進 (過去到未來)': History,
+  '迷思破解 (Before vs After)': Sparkles,
+  '中心發散與分類結構': Share2,
+  '垂直瀑布流往下': Layout,
+  'Z 字型左右視線引導': Route,
+  '中心發散式佈局': Share2,
+  '左右兩半部強烈對比': Monitor,
+  '網格化棋盤排版': Box,
 };
 
 const INITIAL_STATE: PromptState = {
@@ -108,6 +128,12 @@ const INITIAL_STATE: PromptState = {
   customCharacter: '',
   speakerNotes: true,
   extraInfo: '',
+  // Infographic specific fields
+  format: '一頁式垂直長圖 (手機閱讀)',
+  customFormat: '',
+  blocks: '4',
+  layout: '垂直瀑布流往下',
+  customLayout: '',
 };
 
 const CHARACTER_SUFFIX_EN = `
@@ -121,6 +147,7 @@ const CHARACTER_SUFFIX_EN = `
 const translate = (val: string) => TRANSLATIONS[val] || val;
 
 export default function App() {
+  const [mode, setMode] = useState<'presentation' | 'infographic'>('presentation');
   const [state, setState] = useState<PromptState>(INITIAL_STATE);
   const [copiedZh, setCopiedZh] = useState(false);
   const [copiedEn, setCopiedEn] = useState(false);
@@ -144,26 +171,48 @@ export default function App() {
     const promptZh = generatePromptZh();
     const promptEn = generatePromptEn();
     
-    const data = [
-      ['類別', '設定項目', '選擇內容'],
-      ['基本設定', '語系', state.language],
-      ['基本設定', '頁數', state.pages],
-      ['基本設定', '時間', state.time],
-      ['基本設定', '講者備註', state.speakerNotes ? '需要' : '不需要'],
-      ['基本設定', '額外資訊', state.extraInfo],
-      ['核心內容', '簡報目的', state.purpose === '自訂簡報目的' ? state.customPurpose : state.purpose],
-      ['核心內容', '大綱邏輯', state.logic === '自訂大綱邏輯' ? state.customLogic : state.logic],
-      ['核心內容', 'CTA', state.cta === '自訂設定' ? state.customCta : state.cta],
-      ['角色與受眾', '你的角色', state.role === '自訂角色' ? state.customRole : state.role],
-      ['角色與受眾', '發表場景', state.scene === '自訂設定' ? state.customScene : state.scene],
-      ['角色與受眾', '目標受眾', state.audience === '自訂設定' ? state.customAudience : state.audience],
-      ['角色與受眾', '語氣人設', state.tone === '自訂設定' ? state.customTone : state.tone],
-      ['視覺風格', '視覺風格', state.visualStyle === '自訂視覺風格' ? state.customVisualStyle : state.visualStyle],
-      ['視覺風格', '主角設定', state.character === '自訂主角' ? state.customCharacter : state.character],
-      ['', '', ''],
-      ['產出結果', '中文提示詞', promptZh],
-      ['產出結果', '英文提示詞', promptEn],
-    ];
+    let data: any[][] = [];
+    if (mode === 'presentation') {
+      data = [
+        ['類別', '設定項目', '選擇內容'],
+        ['基本設定', '語系', state.language],
+        ['基本設定', '頁數', state.pages],
+        ['基本設定', '時間', state.time],
+        ['基本設定', '講者備註', state.speakerNotes ? '需要' : '不需要'],
+        ['基本設定', '額外資訊', state.extraInfo],
+        ['核心內容', '簡報目的', state.purpose === '自訂簡報目的' ? state.customPurpose : state.purpose],
+        ['核心內容', '大綱邏輯', state.logic === '自訂大綱邏輯' ? state.customLogic : state.logic],
+        ['核心內容', 'CTA', state.cta === '自訂設定' ? state.customCta : state.cta],
+        ['角色與受眾', '你的角色', state.role === '自訂角色' ? state.customRole : state.role],
+        ['角色與受眾', '發表場景', state.scene === '自訂設定' ? state.customScene : state.scene],
+        ['角色與受眾', '目標受眾', state.audience === '自訂設定' ? state.customAudience : state.audience],
+        ['角色與受眾', '語氣人設', state.tone === '自訂設定' ? state.customTone : state.tone],
+        ['視覺風格', '視覺風格', state.visualStyle === '自訂視覺風格' ? state.customVisualStyle : state.visualStyle],
+        ['視覺風格', '主角設定', state.character === '自訂主角' ? state.customCharacter : state.character],
+        ['', '', ''],
+        ['產出結果', '中文提示詞', promptZh],
+        ['產出結果', '英文提示詞', promptEn],
+      ];
+    } else {
+      data = [
+        ['類別', '設定項目', '選擇內容'],
+        ['基本設定', '語系', state.language],
+        ['基本設定', '尺寸與格式', state.format === '自訂格式' ? state.customFormat : state.format],
+        ['基本設定', '區塊數', state.blocks],
+        ['核心內容', '圖表目的', state.purpose === '自訂簡報目的' ? state.customPurpose : state.purpose],
+        ['核心內容', '邏輯架構', state.logic === '自訂大綱邏輯' ? state.customLogic : state.logic],
+        ['核心內容', 'CTA', state.cta === '自訂設定' ? state.customCta : state.cta],
+        ['角色與受眾', '人設視角', state.role === '自訂角色' ? state.customRole : state.role],
+        ['角色與受眾', '目標受眾', state.audience === '自訂設定' ? state.customAudience : state.audience],
+        ['角色與受眾', '文字語氣', state.tone === '自訂設定' ? state.customTone : state.tone],
+        ['畫面與視覺', '引導排版', state.layout === '自訂排版' ? state.customLayout : state.layout],
+        ['畫面與視覺', '視覺風格', state.visualStyle === '自訂視覺風格' ? state.customVisualStyle : state.visualStyle],
+        ['畫面與視覺', '主角吉祥物', state.character === '自訂主角' ? state.customCharacter : state.character],
+        ['', '', ''],
+        ['產出結果', '中文提示詞', promptZh],
+        ['產出結果', '英文提示詞', promptEn],
+      ];
+    }
 
     const ws = XLSX.utils.aoa_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -176,10 +225,110 @@ export default function App() {
       { wch: 100 }, // Content
     ];
 
-    XLSX.writeFile(wb, `AI_Presentation_Prompt_${new Date().getTime()}.xlsx`);
+    XLSX.writeFile(wb, `AI_Prompt_${mode}_${new Date().getTime()}.xlsx`);
+  };
+
+  const generateInfographPromptZh = () => {
+    const {
+      language, format, customFormat, blocks, purpose, customPurpose, logic, customLogic,
+      cta, customCta, role, customRole, audience, customAudience, tone, customTone,
+      layout, customLayout, visualStyle, customVisualStyle, character, customCharacter
+    } = state;
+
+    const finalFormat = format === '自訂格式' ? customFormat : format;
+    const finalPurpose = purpose === '自訂簡報目的' ? customPurpose : purpose;
+    const finalLogic = logic === '自訂大綱邏輯' ? customLogic : logic;
+    const finalCta = cta === '自訂設定' ? customCta : cta;
+    const finalRole = role === '自訂角色' ? customRole : role;
+    const finalAudience = audience === '自訂設定' ? customAudience : audience;
+    const finalTone = tone === '自訂設定' ? customTone : tone;
+    const finalLayout = layout === '自訂排版' ? customLayout : layout;
+    let finalVisualStyle = visualStyle === '自訂視覺風格' ? customVisualStyle : visualStyle;
+    let finalCharacter = character === '不需要主角' ? '不需要' : (character === '自訂主角' ? customCharacter : character);
+
+    let prompt = `請為我生成一份專業的「資訊圖表 (Infographic)」內容架構與視覺腳本。
+
+【基本設定】
+- 語系：${language}
+- 圖表尺寸與格式：${finalFormat}
+- 預計資訊區塊數：請將所有內容濃縮精煉，分為 ${blocks} 個核心視覺區塊。
+
+【內容核心】
+- 圖表目的：這是一份「${finalPurpose}」的資訊圖表。
+- 資訊邏輯架構：請依照「${finalLogic}」來組織文案。
+${cta !== '不需要設定' ? `- 核心行動呼籲 (CTA)：圖表最末端的引導動作是「${finalCta}」。` : ''}
+
+【角色與受眾】
+${role !== '不需要角色' ? `- 敘事視角/人設：請以「${finalRole}」的角度撰寫。` : ''}
+- 目標受眾：讀者是「${finalAudience}」。
+- 文字語氣：文案必須「${finalTone}」，大標題需要具備「鉤子」屬性。
+
+【畫面編排與視覺風格】
+- 畫面引導排版：請採用「${finalLayout}」。
+- 視覺與插畫風格：整體視覺為「${finalVisualStyle}」。
+- 主角與吉祥物設定：${finalCharacter}。
+
+【產出要求】
+請為每個「資訊區塊」提供以下細節：
+1. 區塊主標題（請控制在 10 字以內的短句）
+2. 核心數據或文案（請條列式，極度精煉，單點不超過 20 字）
+3. 視覺圖示建議（明確指示這裡該畫什麼，例如：使用甜甜圈圖表呈現比例、畫一個破掉的燈泡代表痛點）`;
+
+    return prompt;
+  };
+
+  const generateInfographPromptEn = () => {
+    const {
+      language, format, customFormat, blocks, purpose, customPurpose, logic, customLogic,
+      cta, customCta, role, customRole, audience, customAudience, tone, customTone,
+      layout, customLayout, visualStyle, customVisualStyle, character, customCharacter
+    } = state;
+
+    const finalFormat = format === '自訂格式' ? customFormat : translate(format);
+    const finalPurpose = purpose === '自訂簡報目的' ? customPurpose : translate(purpose);
+    const finalLogic = logic === '自訂大綱邏輯' ? customLogic : translate(logic);
+    const finalCta = cta === '自訂設定' ? customCta : translate(cta);
+    const finalRole = role === '自訂角色' ? customRole : translate(role);
+    const finalAudience = audience === '自訂設定' ? customAudience : translate(audience);
+    const finalTone = tone === '自訂設定' ? customTone : translate(tone);
+    const finalLayout = layout === '自訂排版' ? customLayout : translate(layout);
+    let finalVisualStyle = visualStyle === '自訂視覺風格' ? customVisualStyle : translate(visualStyle);
+    let finalCharacter = character === '不需要主角' ? 'Not needed' : (character === '自訂主角' ? customCharacter : translate(character));
+
+    let prompt = `Please generate a professional "Infographic" content structure and visual script for me.
+
+[Basic Settings]
+- Language: ${translate(language)}
+- Size & Format: ${finalFormat}
+- Expected Sections: Please condense all content into ${blocks} core visual sections.
+
+[Core Content]
+- Purpose: This is an infographic for "${finalPurpose}".
+- Logic & Structure: Please organize the copy based on "${finalLogic}".
+${cta !== '不需要設定' ? `- Call to Action (CTA): The final guiding action is "${finalCta}".` : ''}
+
+[Role & Audience]
+${role !== '不需要角色' ? `- Perspective/Persona: Please write from the perspective of a "${finalRole}".` : ''}
+- Target Audience: The readers are "${finalAudience}".
+- Tone: The copy must be "${finalTone}", and the main title needs a "hook" attribute.
+
+[Layout & Visual Style]
+- Layout/Flow: Please use "${finalLayout}".
+- Visual Style: The overall style is "${finalVisualStyle}".
+- Mascot/Character: ${finalCharacter}.
+
+[Output Requirements]
+Please provide the following details for each "Information Section":
+1. Section Title (strictly within 10 words)
+2. Core Data or Copy (bulleted, extremely concise, max 20 words per point)
+3. Visual Icon Suggestions (explicitly indicate what to draw, e.g., use a donut chart, or draw a broken lightbulb)`;
+
+    return prompt;
   };
 
   const generatePromptZh = () => {
+    if (mode === 'infographic') return generateInfographPromptZh();
+
     const {
       language, pages, time, purpose, customPurpose, logic, customLogic,
       cta, customCta, role, customRole, scene, customScene, audience,
@@ -301,6 +450,8 @@ export default function App() {
   };
 
   const generatePromptEn = () => {
+    if (mode === 'infographic') return generateInfographPromptEn();
+
     const {
       language, pages, time, purpose, customPurpose, logic, customLogic,
       cta, customCta, role, customRole, scene, customScene, audience,
@@ -362,10 +513,17 @@ export default function App() {
       const newState = { ...prev, [id]: value };
       
       // Auto-recommendation logic
-      if (id === 'purpose' && RECOMMENDATIONS[value]) {
-        newState.logic = RECOMMENDATIONS[value].logic;
-        newState.visualStyle = RECOMMENDATIONS[value].visualStyle;
-        newState.character = RECOMMENDATIONS[value].character;
+      const activeRecommendations = mode === 'presentation' ? RECOMMENDATIONS : INFOGRAPH_RECOMMENDATIONS;
+      if (id === 'purpose' && activeRecommendations[value]) {
+        newState.logic = activeRecommendations[value].logic;
+        newState.visualStyle = activeRecommendations[value].visualStyle;
+        if (mode === 'presentation' && (activeRecommendations[value] as any).character) {
+          newState.character = (activeRecommendations[value] as any).character;
+        }
+        if (mode === 'infographic' && (activeRecommendations[value] as any).layout) {
+          newState.layout = (activeRecommendations[value] as any).layout;
+          newState.character = (activeRecommendations[value] as any).character;
+        }
       }
       
       return newState;
@@ -406,8 +564,28 @@ export default function App() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {/* Mode Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-[#0F1117] p-1.5 rounded-2xl border border-white/5 flex gap-1 shadow-lg">
+            <button 
+              onClick={() => setMode('presentation')} 
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${mode === 'presentation' ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Presentation size={18} />
+              簡報 (Presentation)
+            </button>
+            <button 
+              onClick={() => setMode('infographic')} 
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${mode === 'infographic' ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <LayersIcon size={18} />
+              資訊圖表 (Infographic)
+            </button>
+          </div>
+        </div>
+
         {/* Section 1: Survey */}
-        {SECTIONS.filter(s => s.id === 'survey').map((section) => (
+        {(mode === 'presentation' ? SECTIONS : INFOGRAPH_SECTIONS).slice(0, 1).map((section) => (
           <motion.section
             key={section.id}
             initial={{ opacity: 0, y: 20 }}
@@ -541,7 +719,7 @@ export default function App() {
 
         {/* Sections 2, 3, 4, 5: Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {SECTIONS.filter(s => s.id !== 'survey').map((section, sIdx) => (
+          {(mode === 'presentation' ? SECTIONS : INFOGRAPH_SECTIONS).slice(1).map((section, sIdx) => (
             <motion.section
               key={section.id}
               initial={{ opacity: 0, y: 20 }}
@@ -611,7 +789,39 @@ export default function App() {
 
                   {/* Custom Input Fields */}
                   <AnimatePresence>
-                    {(state.purpose === '自訂簡報目的' && section.id === 'purpose_section') && (
+                    {(state.format === '自訂格式' && section.fields[0].id === 'format') && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="pt-2"
+                      >
+                        <input
+                          type="text"
+                          placeholder="請輸入自訂格式..."
+                          value={state.customFormat}
+                          onChange={(e) => updateField('customFormat', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#1A1D26] border border-pink-500/30 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm text-white"
+                        />
+                      </motion.div>
+                    )}
+                    {(state.layout === '自訂排版' && section.fields[0].id === 'layout') && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="pt-2"
+                      >
+                        <input
+                          type="text"
+                          placeholder="請輸入自訂排版..."
+                          value={state.customLayout}
+                          onChange={(e) => updateField('customLayout', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#1A1D26] border border-pink-500/30 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm text-white"
+                        />
+                      </motion.div>
+                    )}
+                    {(state.purpose === '自訂簡報目的' && section.fields[0].id === 'purpose') && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}

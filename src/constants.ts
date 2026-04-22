@@ -53,7 +53,7 @@ export const SECTIONS: Section[] = [
         label: '目標受眾 (對誰報告)',
         type: 'select',
         options: [
-          '潛在客戶與決策者',
+          '潛落客戶與決策者',
           '內部團隊與主管',
           '一般大眾與消費者',
           '學生與學術人員',
@@ -232,3 +232,222 @@ export const CHARACTER_SUFFIX = `
 4. 畫面配置：角色固定於側邊，嚴禁遮擋投影片文字。
 5. 指引互動：具備指引手勢，引導受眾聚焦當前重點。
 6. 解說姿態：呈現熱情生動的姿勢，提升信任感。`;
+
+export const INFOGRAPH_SECTIONS: Section[] = [
+  {
+    id: 'survey',
+    title: '1. 圖表基本與進階設定',
+    fields: [
+      {
+        id: 'format',
+        label: '尺寸與格式',
+        type: 'select',
+        options: [
+          '一頁式垂直長圖 (手機閱讀)',
+          'IG 長條貼文 (4:5)',
+          'IG 方形貼文 (1:1)',
+          '橫向全景圖 (網頁用)',
+          'A4 實體海報',
+          '自訂格式'
+        ],
+        customId: 'customFormat'
+      },
+      {
+        id: 'blocks',
+        label: '預計資訊區塊數',
+        type: 'number',
+        placeholder: '例如：4'
+      },
+      {
+        id: 'role',
+        label: '敘事視角/人設',
+        type: 'select',
+        options: [
+          '客觀的數據分析師',
+          '專業的產業專家',
+          '活潑親切的社群小編',
+          '不需要角色',
+          '自訂角色'
+        ],
+        customId: 'customRole'
+      },
+      {
+        id: 'audience',
+        label: '目標受眾',
+        type: 'select',
+        options: [
+          '無技術背景的一般消費者',
+          '專業人士與從業人員',
+          '學生與學術研究者',
+          '企業決策者與主管',
+          '自訂設定'
+        ],
+        customId: 'customAudience'
+      },
+      {
+        id: 'tone',
+        label: '文字語氣',
+        type: 'select',
+        options: [
+          '極度白話、吸睛且帶有幽默感',
+          '客觀中立、數據說話',
+          '專業嚴謹、字斟句酌',
+          '感性溫暖、充滿故事性',
+          '自訂設定'
+        ],
+        customId: 'customTone'
+      },
+      {
+        id: 'cta',
+        label: '核心行動呼籲 (CTA)',
+        type: 'select',
+        options: [
+          '掃描 QR Code 下載白皮書/報告',
+          '點擊連結了解更多/購買',
+          '分享這份圖表給朋友',
+          '留言討論看法',
+          '不需要設定',
+          '自訂設定'
+        ],
+        customId: 'customCta'
+      },
+      {
+        id: 'character',
+        label: '主角與吉祥物設定',
+        type: 'select',
+        options: [
+          '不需要主角',
+          '專業導覽員',
+          '活潑吉祥物',
+          '自訂主角'
+        ],
+        customId: 'customCharacter'
+      },
+      {
+        id: 'speakerNotes',
+        label: '需要講者備註',
+        type: 'radio',
+        options: ['需要', '不需要']
+      },
+      {
+        id: 'extraInfo',
+        label: '補充說明 (自由填寫)',
+        type: 'textarea',
+        placeholder: '例如：請著重介紹這項技術的突破性...'
+      }
+    ]
+  },
+  {
+    id: 'purpose_section',
+    title: '2. 圖表目的',
+    fields: [
+      {
+        id: 'purpose',
+        label: '圖表目的',
+        type: 'select',
+        options: [
+          '知識科普與懶人包',
+          '產品規格與痛點對比',
+          '時間軸與歷史演進',
+          '數據調查與成效報告',
+          '操作流程圖解 (Step-by-step)',
+          '自訂簡報目的'
+        ],
+        customId: 'customPurpose'
+      }
+    ]
+  },
+  {
+    id: 'logic_section',
+    title: '3. 資訊邏輯架構',
+    fields: [
+      {
+        id: 'logic',
+        label: '資訊邏輯架構',
+        type: 'select',
+        options: [
+          '痛點放大 → 方案對比',
+          '漏斗型結構 (大範圍到小細節)',
+          '時間軸推進 (過去到未來)',
+          '迷思破解 (Before vs After)',
+          '中心發散與分類結構',
+          '自訂大綱邏輯'
+        ],
+        customId: 'customLogic'
+      }
+    ]
+  },
+  {
+    id: 'layout_section',
+    title: '4. 畫面引導排版',
+    fields: [
+      {
+        id: 'layout',
+        label: '畫面引導排版',
+        type: 'select',
+        options: [
+          '垂直瀑布流往下',
+          'Z 字型左右視線引導',
+          '中心發散式佈局',
+          '左右兩半部強烈對比',
+          '網格化棋盤排版',
+          '自訂排版'
+        ],
+        customId: 'customLayout'
+      }
+    ]
+  },
+  {
+    id: 'visual_section',
+    title: '5. 視覺風格',
+    fields: [
+      {
+        id: 'visualStyle',
+        label: '視覺與插畫風格',
+        type: 'select',
+        options: [
+          '扁平化幾何插畫 (Flat Design)',
+          '3D 奶油 / 黏土膨脹風',
+          '科技感霓虹數據風',
+          '極簡無印留白風',
+          '復古雜誌 / 報紙排版',
+          '自訂視覺風格'
+        ],
+        customId: 'customVisualStyle'
+      }
+    ]
+  }
+];
+
+export const INFOGRAPH_RECOMMENDATIONS: Record<string, { logic: string; layout: string; visualStyle: string; character: string }> = {
+  '知識科普與懶人包': {
+    logic: '漏斗型結構 (大範圍到小細節)',
+    layout: '垂直瀑布流往下',
+    visualStyle: '扁平化幾何插畫 (Flat Design)',
+    character: '活潑吉祥物'
+  },
+  '產品規格與痛點對比': {
+    logic: '痛點放大 → 方案對比',
+    layout: '左右兩半部強烈對比',
+    visualStyle: '3D 奶油 / 黏土膨脹風',
+    character: '不需要主角'
+  },
+  '時間軸與歷史演進': {
+    logic: '時間軸推進 (過去到未來)',
+    layout: 'Z 字型左右視線引導',
+    visualStyle: '復古雜誌 / 報紙排版',
+    character: '不需要主角'
+  },
+  '數據調查與成效報告': {
+    logic: '中心發散與分類結構',
+    layout: '網格化棋盤排版',
+    visualStyle: '科技感霓虹數據風',
+    character: '專業導覽員'
+  },
+  '操作流程圖解 (Step-by-step)': {
+    logic: '痛點放大 → 方案對比',
+    layout: 'Z 字型左右視線引導',
+    visualStyle: '極簡無印留白風',
+    character: '不需要主角'
+  },
+};
